@@ -1,0 +1,55 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+skylib_version = "1.0.3"
+http_archive(
+  name = "bazel_skylib",
+  type = "tar.gz",
+  url = "https://github.com/bazelbuild/bazel-skylib/releases/download/{}/bazel-skylib-{}.tar.gz".format (skylib_version, skylib_version),
+  sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c"
+)
+
+# -- scala -- #
+
+rules_scala_version="db8a5c624f5794ed349fd25eafefc39588bb8fd8" # update this as needed
+
+http_archive(
+  name = "io_bazel_rules_scala",
+  url = "https://github.com/bazelbuild/rules_scala/archive/%s.zip"%rules_scala_version,
+  type = "zip",
+  strip_prefix= "rules_scala-%s" % rules_scala_version,
+  sha256 = "3addb4c6777c707a9cda48d7756047d7f18363584a17310e9a958ae5dc015df0"
+)
+
+load("@io_bazel_rules_scala//:scala_config.bzl", "scala_config")
+scala_config(scala_version = "2.12.12")
+
+load("@io_bazel_rules_scala//scala:scala.bzl", "scala_repositories")
+scala_repositories()
+
+load("@io_bazel_rules_scala//scala:toolchains.bzl", "scala_register_toolchains")
+scala_register_toolchains()
+
+
+
+
+# -- maven -- #
+RULES_JVM_EXTERNAL_TAG = "3.3"
+RULES_JVM_EXTERNAL_SHA = "d85951a92c0908c80bd8551002d66cb23c3434409c814179c0ff026b53544dab"
+
+http_archive(
+    name = "rules_jvm_external",
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+)
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
+maven_install(
+    artifacts = [
+        "joda-time:joda-time:2.10.8",
+    ],
+    repositories = [
+        "http://uk.maven.org/maven2",
+        "https://jcenter.bintray.com/",
+    ],
+)
