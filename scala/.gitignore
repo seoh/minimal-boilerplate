@@ -1,0 +1,17 @@
+# metals
+*/.bloop
+*/.metals
+*/project/.bloop
+*/project/metals.sbt
+	
+# intellij
+*/.idea
+
+# vscode
+*/.vscode
+
+# build cache
+*/project/project
+*/project/target
+*/target
+
