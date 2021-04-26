@@ -1,0 +1,7 @@
+
+# bazel
+bazel-bazel-scala
+bazel-bin
+bazel-out
+bazel-testlogs
+
