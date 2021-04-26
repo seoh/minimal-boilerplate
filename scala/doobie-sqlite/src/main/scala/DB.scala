@@ -18,7 +18,7 @@ object DB {
 
   private def now: Long = System.currentTimeMillis
 
-  val create: ConnectionIO[Int] =
+  val create: IO[Int] =
     sql"""|
           |CREATE TABLE IF NOT EXISTS data(
           |  id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,22 +26,18 @@ object DB {
           |  value       TEXT    NOT NULL,
           |  created_at  NUMERIC
           |)
-          |""".stripMargin.update.run
+          |""".stripMargin.update.run.transact(xa)
 
-  val cleanup: ConnectionIO[Int] =
+  val cleanup: IO[Int] =
     sql"""|
           |DELETE FROM data
           |WHERE created_at < ${now - 60*60*1000}
-          |""".stripMargin.update.run
+          |""".stripMargin.update.run.transact(xa)
 
-  println(
-    (for {
-      c1 <- create
-      c2 <- cleanup
-    } yield s"Created($c1), Cleaned-up rows inserted after an hour($c2)")
-    .transact(xa)
-    .unsafeRunSync()
-  )
+  val c1 = create.unsafeRunSync()
+  val c2 = cleanup.unsafeRunSync()
+  println(s"Created($c1), Cleaned-up rows inserted after an hour($c2)")
+
 
 
   type Result[T] = IO[Either[Throwable, T]]
